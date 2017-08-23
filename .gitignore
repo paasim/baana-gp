@@ -1,0 +1,12 @@
+apik
+*.feather
+*.rds
+*.nb.html
+*.pdf
+.Rhistory
+.Rapp.history
+.Rproj.user
+.Rbuildignore
+.localized
+.DS_Store
+
