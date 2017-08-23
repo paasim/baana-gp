@@ -2,7 +2,6 @@ apik
 *.feather
 *.rds
 *.nb.html
-*.pdf
 .Rhistory
 .Rapp.history
 .Rproj.user
