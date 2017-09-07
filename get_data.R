@@ -1,6 +1,7 @@
 rm(list = ls())
-# to install simplefmi:
-# devtools::install_github("paasim/simplefmi")
+# simplefmi is available at github: devtools::install_github("paasim/simplefmi")
+# also, to use the fmi weather api, an api key is required, see
+# http://en.ilmatieteenlaitos.fi/open-data-manual-fmi-wfs-services
 library(tidyverse)
 library(forcats)
 library(stringr)

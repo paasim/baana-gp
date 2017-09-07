@@ -1,5 +1,4 @@
 apik
-*.feather
 *.rds
 *.nb.html
 .Rhistory

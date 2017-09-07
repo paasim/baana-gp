@@ -2,7 +2,7 @@
 title: "Modelling cyclist count with Gaussian Processes in Stan"
 author: "Markus Paasiniemi"
 date: "`r Sys.Date()`"
-output: html_document
+output: html_notebook
 bibliography: ref.bib
 ---
 
@@ -28,10 +28,10 @@ options(mc.cores = parallel::detectCores())
 rstan_options(auto_write = TRUE)
 ```
 
-Prepare the data for the modelling by scaling the variables and take a subset of 200 observations for training the model.
+Prepare the data [@fmi, @hri] for the modelling by scaling the variables and take a subset of 200 observations for training the model.
 
 ```{r}
-# source(get_data.R)
+# The instructions for obtaining the data are in the script get_data.R
 (df_raw <- read_feather("data.feather"))
 
 df <- mutate_at(df_raw, c("temp", "rain", "count"), function(x) c(scale(x)))
@@ -88,7 +88,7 @@ The data is scaled to have 0 mean, 1 standard deviation, so the priors for the n
 
 For the length-scales, the prior distribution is an inverse gamma instead of a normal so that there is only a non-significant mass around zero. This is because when the length-scale is smaller than the smallest possible change in the variables, the likelihood plateaus and it causes numerical problems in fitting the model. On the other hand, in this particular case it is also not even desirable to detect functions that are more rapidly changing than the smallest differences in the data.
 
-Fitting the model with MCMC takes around an hour, so load the results from the disk.
+Fitting the model with MCMC takes around an hour, so load the results from the disk. To run the script for the first time, uncomment the commented lines.
 
 ```{r, message=FALSE, warning=FALSE}
 # data for the model
@@ -276,8 +276,6 @@ dow_samp <- get_samp(e_all$f_pe, df$date) %>%
   rename(date = x) %>%
   left_join(select(df_raw, date, wkday), "date") %>% # add wkday
   group_by(sample, wkday)
- # transform the component so that mean of cyclists on sunday is 0. 
-dow_samp$val <- dow_samp$val - mean(filter(dow_samp, wkday == "Sun")$val)
 
 dow_samp_winter <- filter(dow_samp, month(date) %in% c(12,1,2)) %>%
   group_by(sample, wkday) %>%
