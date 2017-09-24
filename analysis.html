@@ -11,7 +11,7 @@
 
 <meta name="author" content="Markus Paasiniemi" />
 
-<meta name="date" content="2017-09-07" />
+<meta name="date" content="2017-09-24" />
 
 <title>Modelling cyclist count with Gaussian Processes in Stan</title>
 
@@ -119,7 +119,7 @@ $(document).ready(function () {
 
 <h1 class="title toc-ignore">Modelling cyclist count with Gaussian Processes in Stan</h1>
 <h4 class="author"><em>Markus Paasiniemi</em></h4>
-<h4 class="date"><em>2017-09-07</em></h4>
+<h4 class="date"><em>2017-09-24</em></h4>
 
 </div>
 
@@ -137,7 +137,7 @@ library(gridExtra)
 library(feather)
 library(readr)
 library(lubridate)
-library(ggjoy)
+library(ggridges)
 library(rstan)
 options(mc.cores = parallel::detectCores())
 rstan_options(auto_write = TRUE)</code></pre>
@@ -316,7 +316,7 @@ tibble(lq = c(0.25, 0.125, 0.05), uq = c(0.75, 0.875, 0.95)) %&gt;% rowwise() %&
 <div id="results" class="section level1">
 <h1>Results</h1>
 <p>As shown in the previous section, the model fits to the observed data pretty nicely. What about the the effects of weather (and week of the day) on the data?</p>
-<p>Let’s start by visualising the component with the cyclical day of the week effect (along with a long yearly trend). The count is transformed so that the mean (over all samples and days) of sunday-effect is be zero. This is done because the actual values are not interesting, but rather the differences between days. Furthermore, the results are somewhat experimentally visualised using a joyplot to test a ‘new shiny method’.</p>
+<p>Let’s start by visualising the component with the cyclical day of the week effect (along with a long yearly trend). The count is transformed so that the mean (over all samples and days) of sunday-effect is be zero. This is done because the actual values are not interesting, but rather the differences between days.</p>
 <pre class="r"><code># get samples from the given variable
 get_samp &lt;- function(var, x, n_samp = 100) {
   as_tibble(t(var[1:n_samp, ])) %&gt;% bind_cols(x = x) %&gt;%
@@ -338,7 +338,7 @@ dow_samp_summer &lt;- filter(dow_samp, month(date) %in% 6:9) %&gt;%
   summarise(count = mean(val))
 
 ggplot(bind_rows(dow_samp_winter, dow_samp_summer, .id = &quot;id&quot;)) +
-  geom_joy(aes(x = count, y = wkday, fill = id), alpha = 0.2, bandwidth = 100) + 
+  geom_density_ridges(aes(x = count, y = wkday, fill = id), alpha = 0.2, bandwidth = 100) + 
   labs(x = &quot;effect on cyclist count&quot;, y = &quot;day of the week&quot;, 
        title = &quot;Day-of-the-week effect on cyclist count&quot;) +
   scale_fill_manual(values = c(&quot;#67a9cf&quot;, &quot;#ef8a62&quot;),

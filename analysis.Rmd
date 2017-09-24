@@ -2,7 +2,7 @@
 title: "Modelling cyclist count with Gaussian Processes in Stan"
 author: "Markus Paasiniemi"
 date: "`r Sys.Date()`"
-output: html_notebook
+output: html_document
 bibliography: ref.bib
 ---
 
@@ -22,7 +22,7 @@ library(gridExtra)
 library(feather)
 library(readr)
 library(lubridate)
-library(ggjoy)
+library(ggridges)
 library(rstan)
 options(mc.cores = parallel::detectCores())
 rstan_options(auto_write = TRUE)
@@ -262,7 +262,7 @@ In addition, the predictions seem well calibrated, ie. 50% of the observations a
 
 As shown in the previous section, the model fits to the observed data pretty nicely. What about the the effects of weather (and week of the day) on the data?
 
-Let's start by visualising the component with the cyclical day of the week effect (along with a long yearly trend). The count is transformed so that the mean (over all samples and days) of sunday-effect is be zero. This is done because the actual values are not interesting, but rather the differences between days. Furthermore, the results are somewhat experimentally visualised using a joyplot to test a 'new shiny method'.
+Let's start by visualising the component with the cyclical day of the week effect (along with a long yearly trend). The count is transformed so that the mean (over all samples and days) of sunday-effect is be zero. This is done because the actual values are not interesting, but rather the differences between days.
 
 ```{r}
 # get samples from the given variable
@@ -286,7 +286,7 @@ dow_samp_summer <- filter(dow_samp, month(date) %in% 6:9) %>%
   summarise(count = mean(val))
 
 ggplot(bind_rows(dow_samp_winter, dow_samp_summer, .id = "id")) +
-  geom_joy(aes(x = count, y = wkday, fill = id), alpha = 0.2, bandwidth = 100) + 
+  geom_density_ridges(aes(x = count, y = wkday, fill = id), alpha = 0.2, bandwidth = 100) + 
   labs(x = "effect on cyclist count", y = "day of the week", 
        title = "Day-of-the-week effect on cyclist count") +
   scale_fill_manual(values = c("#67a9cf", "#ef8a62"),
